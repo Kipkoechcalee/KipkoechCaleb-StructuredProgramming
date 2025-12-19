@@ -1,1 +1,260 @@
+# EEC 2202: Structured Programming - Assignment 3
+## Variables, Pointers & Functions
 
+**Author:** Your Name  
+**Student ID:** Your Student ID  
+**Course:** EEC 2202 - Structured Programming  
+**Date:** Submission Date  
+**GitHub Repository:** [Link to your repository]
+
+---
+
+## 📚 Task 1: Conceptual Notes on Pointers
+
+### 1. **Difference Between a Normal Variable and a Pointer**
+
+| Aspect | Normal Variable | Pointer Variable |
+|--------|----------------|------------------|
+| **What it stores** | Direct value (e.g., `int x = 10;` stores `10`) | Memory address of another variable (e.g., `int *p = &x;` stores address of `x`) |
+| **Memory access** | Accessed directly by name | Accessed through dereferencing operator `*` |
+| **Reading values** | `printf("%d", x);` | `printf("%d", *p);` (dereference to get value) |
+| **Modifying values** | `x = 20;` | `*p = 20;` (modifies the variable it points to) |
+| **Memory representation** | Stores data | Stores address pointing to data |
+
+**Example:**
+```c
+int num = 42;        // Normal variable: stores value 42
+int *ptr = &num;     // Pointer: stores address of num
+printf("%d", num);   // Direct access: 42
+printf("%d", *ptr);  // Indirect access: 42 (dereferenced)
+2. Variable Declaration vs Definition vs Pointer Declaration vs Definition
+Variable:
+Declaration: extern int x; (tells compiler "x exists somewhere")
+
+Definition: int x = 5; (allocates memory and initializes)
+
+Pointer:
+Declaration: int *p; (declares p as pointer to int, no memory allocated for actual data)
+
+Definition: int *p = &x; (allocates pointer variable and assigns address)
+
+Key Operators:
+
+* in declaration: int *p; → p is a pointer to integer
+
+* in expression: *p = 10; → dereference (access value at address)
+
+& operator: &x → get address of variable x
+
+Example:
+
+c
+int x;           // Variable declaration (also definition if global)
+int y = 10;      // Variable definition with initialization
+int *p1;         // Pointer declaration
+int *p2 = &y;    // Pointer definition with initialization
+*p2 = 20;        // Dereferencing to modify y
+3. Dereferencing a Pointer
+What is dereferencing?
+Dereferencing means accessing the value stored at the memory address held by a pointer. It's done using the * operator.
+
+Example demonstrating dereferencing:
+
+c
+#include <stdio.h>
+
+int main() {
+    int value = 100;
+    int *ptr = &value;  // ptr stores address of value
+    
+    printf("ptr stores address: %p\n", (void*)ptr);
+    printf("*ptr gives value: %d\n", *ptr);  // Dereferencing
+    
+    // Modifying value through pointer
+    *ptr = 200;  // Changes 'value' to 200
+    
+    printf("After modification:\n");
+    printf("value = %d\n", value);
+    printf("*ptr = %d\n", *ptr);
+    
+    return 0;
+}
+How it works:
+
+ptr contains memory address (e.g., 0x7ffd1234)
+
+*ptr goes to that address and reads/writes the value there
+
+This allows indirect access to variables
+
+4. When Pointers Are Preferred Over Normal Variables
+Scenario 1: Dynamic Memory Allocation
+When memory needs to be allocated at runtime (not compile time):
+
+c
+int *arr;
+int size;
+printf("Enter array size: ");
+scanf("%d", &size);
+
+arr = (int*)malloc(size * sizeof(int));  // Runtime allocation
+// Use arr...
+free(arr);  // Release memory
+Scenario 2: Function Needs to Modify Multiple Values
+When a function needs to return/modify more than one value:
+
+c
+void getMinMax(int arr[], int n, int *min, int *max) {
+    *min = arr[0];
+    *max = arr[0];
+    for(int i = 1; i < n; i++) {
+        if(arr[i] < *min) *min = arr[i];
+        if(arr[i] > *max) *max = arr[i];
+    }
+}
+
+// Usage:
+int minimum, maximum;
+getMinMax(myArray, 10, &minimum, &maximum);
+Scenario 3: Data Structures (Linked Lists, Trees)
+Essential for dynamic data structures:
+
+c
+struct Node {
+    int data;
+    struct Node* next;  // Pointer to next node
+};
+Scenario 4: Passing Large Data Structures Efficiently
+Instead of copying entire structures:
+
+c
+struct LargeData {
+    double matrix[1000][1000];
+    // ... other large fields
+};
+
+void processData(struct LargeData *data) {
+    // Works on original, no copy made
+    // Efficient for large data
+}
+5. Limitations and Risks of Using Pointers
+Risk	Description	Example/Consequence
+Dangling Pointers	Pointer pointing to freed memory	int *p = malloc(...); free(p); *p = 10; → Undefined behavior
+Memory Leaks	Forgetting to free allocated memory	p = malloc(...); without free(p) → Memory not released
+Null Pointer Dereference	Dereferencing a NULL pointer	int *p = NULL; printf("%d", *p); → Program crash
+Uninitialized Pointers	Using pointer before assigning address	int *p; *p = 10; → Points to random memory
+Pointer Arithmetic Errors	Incorrect pointer calculations	Accessing array out of bounds
+Complexity	Harder to read/debug than normal variables	Increases cognitive load
+Security Vulnerabilities	Buffer overflows, injection attacks	Common in C vulnerabilities
+Safety Tips:
+
+Always initialize pointers: int *p = NULL;
+
+Check for NULL before dereferencing
+
+Use free() for every malloc()/calloc()
+
+Avoid pointer arithmetic unless necessary
+
+Consider using arrays when possible
+
+6. Call by Value vs Call by Reference
+Call by Value:
+
+A copy of the argument is passed to the function
+
+Original variable remains unchanged
+
+Default in C for all non-pointer types
+
+c
+void incrementByValue(int x) {
+    x++;  // Only modifies local copy
+}
+
+int main() {
+    int num = 5;
+    incrementByValue(num);
+    printf("%d", num);  // Still 5
+}
+Call by Reference:
+
+Address of the argument is passed (using pointers)
+
+Function can modify original variable
+
+Achieved by passing pointers
+
+c
+void incrementByReference(int *x) {
+    (*x)++;  // Modifies original variable
+}
+
+int main() {
+    int num = 5;
+    incrementByReference(&num);
+    printf("%d", num);  // Now 6
+}
+
+a. When Call by Value is Preferred:
+
+Mathematical Functions:
+
+c
+double square(double x) {
+    return x * x;  // Original shouldn't change
+}
+Input Validation (Read-only):
+
+c
+int isValidAge(int age) {
+    return (age >= 0 && age <= 150);
+}
+Small Data Types:
+
+c
+char toUpperCase(char c) {
+    if(c >= 'a' && c <= 'z')
+        return c - 32;
+    return c;
+}
+When Safety is Priority: Ensuring original data can't be accidentally modified.
+
+b. When Call by Reference is Preferred:
+
+Swapping Variables:
+
+c
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+Returning Multiple Values:
+
+c
+void getDimensions(int *length, int *width, int *height) {
+    *length = 10;
+    *width = 5;
+    *height = 3;
+}
+Modifying Array Elements:
+
+c
+void initializeArray(int *arr, int size) {
+    for(int i = 0; i < size; i++)
+        arr[i] = 0;
+}
+Large Structures (Efficiency):
+
+c
+void updateStudent(Student *s) {
+    // Modify student record efficiently
+    // No copy of entire structure
+}
+Dynamic Data Structures:
+
+c
+void insertNode(Node **head, int data) {
+    // Modify head pointer if list was empty
+}
