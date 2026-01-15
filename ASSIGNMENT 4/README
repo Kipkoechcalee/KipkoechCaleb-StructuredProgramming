@@ -1,1 +1,17 @@
 
+# EEC 2202: Structured Programming – Assignment 4  
+**Arrays in C**
+
+---
+
+## 📌 Overview  
+This assignment focuses on implementing various array operations in C, covering fundamental concepts such as traversal, manipulation, and algorithmic processing of arrays. It includes 8 programming tasks that progressively build from basic array handling to more advanced applications like circular buffers and 2D array traversal.
+
+---
+
+## 📋 Task List & Descriptions
+
+### **1. Array Reverse Display**  
+Read `n` values into an array and display them in reverse order.
+
+**Test Data:**  
